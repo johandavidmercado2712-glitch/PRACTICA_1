@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Restaurante - Práctica #1</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Gestión de Pedidos .</h1>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">Crear Artículo</div>
+                    <div class="card-body">
+                        <form action="/nuevo-articulo" method="POST">
+                            <input type="text" name="nombre" class="form-control mb-2" placeholder="Nombre (ej. Hamburguesa)" required>
+                            <input type="number" name="valor" class="form-control mb-2" placeholder="Precio" step="0.01" required>
+                            <button type="submit" class="btn btn-success w-100">Guardar Artículo</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-dark text-white">Registrar Nuevo Pedido</div>
+                    <div class="card-body">
+                        <form action="/nuevo-pedido" method="POST" class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Cliente</label>
+                                <input type="text" name="cliente" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Artículo</label>
+                                <select name="articulo_id" class="form-select" required>
+                                    {% for art in articulos %}
+                                    <option value="{{ art.id }}">{{ art.nombre }} (${{ art.valor }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Cantidad</label>
+                                <input type="number" name="cantidad" class="form-control" value="1" min="1">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Dirección</label>
+                                <input type="text" name="direccion" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Ciudad</label>
+                                <input type="text" name="ciudad" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text" name="telefono" class="form-control" required>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <button type="submit" class="btn btn-primary w-100">Crear Pedido</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <h2 class="mb-3">Pedidos Recibidos</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover bg-white shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Fecha/Hora</th>
+                        <th>Articulo</th>
+                        <th>Total</th>
+                        <th>Estado Actual</th>
+                        <th>Acciones de Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in pedidos %}
+                    <tr>
+                        <td>{{ p.cliente }}<br><small class="text-muted">{{ p.telefono }}</small></td>
+                        <td>{{ p.fecha_hora.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ p.cantidad }}x {{ p.articulo.nombre }}</td>
+                        <td>${{ p.total }} ${{ p.valor_total }}</td>
+                        <td><span class="badge bg-info text-dark">{{ p.estado }}</span></td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="/actualizar-estado/{{ p.id }}/EN PREPARACIÓN" class="btn btn-warning">Preparar</a>
+                                <a href="/actualizar-estado/{{ p.id }}/EN REPARTO" class="btn btn-primary">Enviar</a>
+                                <a href="/actualizar-estado/{{ p.id }}/ENTREGADO" class="btn btn-success">Entregar</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
